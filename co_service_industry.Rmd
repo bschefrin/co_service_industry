@@ -1,7 +1,9 @@
 ---
 title: "Leisure & Hospitality Employment in CO"
 author: "Benjamin Jacob Schefrin"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE, include=FALSE}
@@ -67,7 +69,7 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
 Before going back to school for an Economics degree I worked for a variety of bars and restaurants in the Boulder area. I enjoyed the work, it paid well and was flexible. After working in this industry for roughly 2 decades I really wanted to get a better idea of where in Colorado was affected, as well as which areas of the leisure and hospitality industry in Colorado have taken the biggest hits.
 
-While comprehensive financial data isn't available, employment data is. In the graphs below I try to provide some level of visual insight as to the state of the Colorado leisure and hospitality industry. I do this by comparing the current level of employment to previous levels of employment from January 2018 to Dec 2020. The data comes from the [Current Employment Statistics](https://www.bls.gov/ces/) (CES) from the Bureau of Labor Statistics (BLS).  
+While comprehensive financial data isn't available, employment data is. In the graphs below I try to provide some level of visual insight as to the state of the Colorado leisure and hospitality industry. I do this by comparing the current level of employment to previous levels of employment from January 2018 to Dec 2020. The data comes from the [Current Employment Statistics](https://www.bls.gov/ces/) (CES) from the Bureau of Labor Statistics (BLS). 
 
 The BLS uses the [North American Industry Classification System](https://www.census.gov/naics/reference_files_tools/2017_NAICS_Manual.pdf) (NAICS) to distinguish jobs in the labor market. The Leisure and Hospitality Industry encompasses two sectors. Arts, Entertainment, & Recreation (Sector 71) and Accomodation & Food Services (Sector 72). With respect to job titles this covers everyone from waiters to ski patrol to fitness instructors to DJs to museum workers etc. NAICS is incredibly useful if you are looking into labor markets, not so much if you are looking for a riveting read. It will probably put you to sleep. So it has that going for it, which is nice. I will do my best to detail which graphs relate to which employment types.
 
@@ -114,8 +116,8 @@ lh_msa <- ggplot(data = co_ces_hospitality_msa_data) +
   labs(title = "CO Leisure & Hospitality Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
        x = "Date", y = "# of Persons Employed (Thousands)") +
   geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
-  annotate(geom = "text", x = as.Date("2019-12-01"), y = 190000, label = "COVID closures ordered 3/16", size = 3) +
-  annotate(geom = "text", x = as.Date("2020-09-01"), y = 190000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  annotate(geom = "text", x = as.Date("2019-12-01"), y = 190000, label = "Closures ordered \nin March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 190000, label = "Limited in person \nopenings in May", size = 3) +
   geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
   scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
   scale_y_continuous(breaks = c(25000, 50000, 75000, 100000, 125000, 150000, 175000),labels = unit_format(unit = NULL, scale = 1e-3)) +
@@ -131,12 +133,12 @@ co_ces_hospitality_msa_data_2 <- co_ces_hospitality_msa_data %>%
   filter(location != "Rest of State")
 
 lh_msa_2 <- ggplot(data = co_ces_hospitality_msa_data_2) +
-  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1.5, alpha = 0.8) +
   labs(title = "CO Leisure & Hospitality Employment 2018-2020 (Denver - Aurora MSA & Rest of State omitted)", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
        x = "Date", y = "# of Persons Employed (Thousands)") +
   geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
-  annotate(geom = "text", x = as.Date("2019-12-01"), y = 47000, label = "COVID closures ordered 3/16", size = 3) +
-  annotate(geom = "text", x = as.Date("2020-09-01"), y = 47000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  annotate(geom = "text", x = as.Date("2019-12-01"), y = 47000, label = "Closures ordered \nin March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 47000, label = "Limited in person \nopenings in May", size = 3) +
   geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
   scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
   scale_y_continuous(breaks = c(10000, 20000, 30000, 40000),labels = unit_format(unit = NULL, scale = 1e-3)) +
@@ -199,8 +201,8 @@ restaurant_type_graph <- ggplot(data = co_ces_restaurant_type_data) +
   labs(title = "CO Bar & Restaurant Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
        x = "Date", y = "# of Persons Employed (Thousands)")+
   geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
-  annotate(geom = "text", x = as.Date("2019-11-01"), y = 128000, label = "COVID closures ordered 3/16", size = 3) +
-  annotate(geom = "text", x = as.Date("2020-09-01"), y = 126000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  annotate(geom = "text", x = as.Date("2019-11-01"), y = 128000, label = "Closures ordered \nin March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 126000, label = "Limited in person \nopenings in May", size = 3) +
   geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
   scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
   scale_y_continuous(breaks = c(25000, 50000, 75000, 100000, 125000),labels = unit_format(unit = NULL, scale = 1e-3)) +
@@ -218,7 +220,7 @@ Limited service eating places have roughly the same number of people employed pr
 
 ## Arts, Entertainment, & Recreation
 
-This sector includes jobs related to the following industries: Performing Arts, Spectator Sports, Museums, Historical Sites, Amusement, Gambling (not casino hotel employees), and Recreation. 
+This sector includes jobs related to the following industries: Performing Arts, Spectator Sports, Museums, Historical Sites, Amusement, Gambling (not casino hotel employees), and Recreation. Data was only available for the entire state or the Denver-Aurora MSA. For this graph I compared the employee numbers from Denver-Aurora MSA to the rest of the state. No data exists for other MSAs.
 
 ```{r, Arts entertainment recreation, echo=FALSE}
 
@@ -243,8 +245,8 @@ are_graph <- ggplot(data = co_ces_are_data) +
   labs(title = "CO Arts, Entertainment, & Recreation Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
        x = "Date", y = "# of Persons Employed (Thousands)") +
   geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
-  annotate(geom = "text", x = as.Date("2020-01-01"), y = 40000, label = "Closures ordered \nmid March", size = 3) +
-  annotate(geom = "text", x = as.Date("2020-09-01"), y = 40000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-01-01"), y = 40000, label = "Closures ordered \nin March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 40000, label = "Limited in person \nopenings in May", size = 3) +
   geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
   scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
   scale_y_continuous(breaks = c(10000, 20000, 30000, 40000),labels = unit_format(unit = NULL, scale = 1e-3)) +
@@ -256,6 +258,51 @@ plot(are_graph)
 
 ```
 
-Pre COVID there was already a lot of seasonal volitility within these industries.  
+Pre COVID there was already a lot of seasonal volitility within these industries. COVID appears to have stunted seasonal rehires. The long term implications are unclear. If the recovery is prolonged Colorado may permanently lose a lot of artists and entertainers as they look for better job markets. As for recreation employees once reopenings happen I suspect their jobs will be able to recover more quickly.
 
+## Accommodation
+
+The last subsector I examined data from was from Accommodation. This includes all hotels, RV parks, Rooming and Boarding houses, etc. I broke up this subsector the same as above, comparing the Denver-Aurora MSA to the rest of the state. No data exists for other MSAs.
+
+```{r, Accomodation, echo=FALSE}
+co_ces_accommodation <- co_ces_service_industry_data %>% 
+  filter(industry == "Accommodation") %>% 
+  select(time, location, current_emp) 
+
+# Getting rest of state information, eliminating colorado from location variable
+co_ces_accommodation_2 <- co_ces_accommodation %>% 
+  pivot_wider(names_from = location, values_from = current_emp) %>% 
+  clean_names() %>% 
+  mutate(rest_of_state = colorado - denver_aurora_msa) %>% 
+  select(time, rest_of_state) %>% 
+  pivot_longer(rest_of_state, names_to = "location", values_to = "current_emp")
+
+co_ces_accommodation_data <- rbind(co_ces_accommodation, co_ces_accommodation_2) %>% 
+  filter(location != "Colorado") %>% 
+  mutate(location = if_else(location == "rest_of_state", "Rest of State", location))
+
+# Accommodation Graph
+
+accommodation_graph <- ggplot(data = co_ces_accommodation_data) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1.5, alpha = 0.8) +
+  labs(title = "CO Accommodation Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
+       x = "Date", y = "# of Persons Employed (Thousands)") +
+  geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
+  annotate(geom = "text", x = as.Date("2020-01-01"), y = 40000, label = "Closures ordered \nin March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 40000, label = "Limited in person \nopenings in May", size = 3) +
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
+  scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
+  scale_y_continuous(breaks = c(10000, 20000, 30000, 40000),labels = unit_format(unit = NULL, scale = 1e-3)) +
+  scale_color_viridis(name = "Locations", discrete = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+plot(accommodation_graph)
+```
+
+Accommodation employment fell steeply once closures were announced in March. Compared to the rest of the state, the Denver-Aurora MSA has recovered the majority of the jobs lost. The rest of the state is doing much worse still missing roughly 30% of jobs compared to last years numbers for the same month. Depending on how fast restrictions can be relaxed it is likely that there will be fewer seasonal employment opportunities for this sector this coming summer.
+
+## Conclusions
+
+To be succinct until restrictions are relaxed employees working the Leisure & Hospitality sector in Colorado will continue to suffer. Thankfully not all sectors/regions are suffering as much as others. The more populated MSAs have more people employed in these sectors and more jobs to recover. This exercise was created to try and gain a little more insight into who and where is being hit the hardest. Feel free to use these graphs so long as credit is given. If you want to replicate any of this the code is available for R on my [Github](https://github.com/bschefrin/co_service_industry) and I have uploaded a CSV that you can use.
 
