@@ -1,0 +1,261 @@
+---
+title: "Leisure & Hospitality Employment in CO"
+author: "Benjamin Jacob Schefrin"
+output: html_document
+---
+
+```{r, echo=FALSE, include=FALSE}
+# Loading libraries
+
+library("pacman")
+
+p_load("tidyverse", "knitr", "lubridate", "janitor", "zoo", "viridis", "scales")
+
+# Data & Data Cleaning-------------------------------------------------------------------------------------
+
+
+# Gathering CO employment data from 2018-2020 and binding data frames into single data frame
+# All data can be found from the CO Department of Labor at the website below.
+# https://www.colmigateway.com/vosnet/lmi/default.aspx
+
+co_ces_2018 <- read_csv("C:/Users/Jake/Desktop/r_projects/co_labor_data/co_ces_data/co_ces_2018.csv")
+
+co_ces_2018_1<- co_ces_2018 %>% 
+  select(area, areaname, seriescode, seriestitle, Timeperiod, CURempces, PMempces)
+
+co_ces_2019 <- read_csv("C:/Users/Jake/Desktop/r_projects/co_labor_data/co_ces_data/co_ces_2019.csv")
+
+co_ces_2019_1<- co_ces_2019 %>% 
+  select(area, areaname, seriescode, seriestitle, Timeperiod, CURempces, PMempces)
+
+co_ces_2020 <- read_csv("C:/Users/Jake/Desktop/r_projects/co_labor_data/co_ces_data/co_ces_2020.csv")
+
+co_ces_2020_1<- co_ces_2020 %>% 
+  select(area, areaname, seriescode, seriestitle, Timeperiod, CURempces, PMempces)
+
+# Binding CO employment data from 2018-2020 into one data frame 
+
+bind_one <- rbind(co_ces_2018_1, co_ces_2019_1)
+
+co_ces_2018_2020 <- rbind(bind_one, co_ces_2020_1)
+
+
+# Renaming column titles and cleaning them. 
+co_ces_2018_2020_1 <- clean_names(co_ces_2018_2020) %>% 
+  rename("location" = "areaname",
+         "industry" = "seriestitle",
+         "time" = "timeperiod",
+         "current_emp" = "cu_rempces",
+         "previous_emp" = "p_mempces")
+
+# Using lubridate to switch time column from character to time
+
+co_ces_2018_2020_2 <- co_ces_2018_2020_1 %>% 
+  mutate(time =   mdy(time) - days(19))
+
+# Removing unnecessary data frames from environment
+
+co_ces_data <- co_ces_2018_2020_2  
+
+rm(list = setdiff(ls(),"co_ces_data"))
+
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+
+```
+
+## COVID 19 and the Colorado Leisure & Hospitality Industry
+
+Before going back to school for an Economics degree I worked for a variety of bars and restaurants in the Boulder area. I enjoyed the work, it paid well and was flexible. After working in this industry for roughly 2 decades I really wanted to get a better idea of where in Colorado was affected, as well as which areas of the leisure and hospitality industry in Colorado have taken the biggest hits.
+
+While comprehensive financial data isn't available, employment data is. In the graphs below I try to provide some level of visual insight as to the state of the Colorado leisure and hospitality industry. I do this by comparing the current level of employment to previous levels of employment from January 2018 to Dec 2020. The data comes from the [Current Employment Statistics](https://www.bls.gov/ces/) (CES) from the Bureau of Labor Statistics (BLS).  
+
+The BLS uses the [North American Industry Classification System](https://www.census.gov/naics/reference_files_tools/2017_NAICS_Manual.pdf) (NAICS) to distinguish jobs in the labor market. The Leisure and Hospitality Industry encompasses two sectors. Arts, Entertainment, & Recreation (Sector 71) and Accomodation & Food Services (Sector 72). With respect to job titles this covers everyone from waiters to ski patrol to fitness instructors to DJs to museum workers etc. NAICS is incredibly useful if you are looking into labor markets, not so much if you are looking for a riveting read. It will probably put you to sleep. So it has that going for it, which is nice. I will do my best to detail which graphs relate to which employment types.
+
+Finally, on all graphs I included vertical lines detailing certain closures and openings. These do not match exactly on the axis due to the fact that the employment data is monthly. Also the data for December 2020 is an estimate from the BLS and is subject to change.
+
+## Leisure and Hospitality in Colorado
+
+```{r lh_msa, echo=FALSE}
+# Data frame that has all hospitality service data 
+hl_target <- c("Leisure and Hospitality", "Arts, Entertainment, and Recreation", 
+               "Amusement, Gambling, and Recreation Indu", "Other Amusement and Recreation Industrie",
+               "Accommodation", "Food Services and Drinking Places", "Full-Service Restaurants",
+               "Limited-Service Eating Places")
+
+
+co_ces_service_industry_data <- co_ces_data %>% 
+  filter(industry %in% hl_target)
+
+# Data frame with Leisure and hospitality data from all CO MSAs and corresponding graph 
+# Removing state-wide data and inserting data from all non MSA regions
+co_ces_hospitality <- co_ces_data %>% 
+  select(location, industry, time, current_emp) %>% 
+  filter(industry == "Leisure and Hospitality") %>% 
+  pivot_wider(names_from = location, values_from = current_emp) 
+
+co_ces_hospitality_2 <- clean_names(co_ces_hospitality) %>% 
+  mutate(rest_of_state = colorado - greeley_msa - fort_collins_loveland_msa - denver_aurora_msa -
+           colorado_springs_msa - boulder_longmont_msa - pueblo_msa - grand_junction_msa) %>% 
+  select(time, rest_of_state) %>% 
+  pivot_longer(rest_of_state, names_to = "location", values_to = "current_emp")
+  
+co_ces_hospitality_bind <- co_ces_data %>% 
+  filter(industry == "Leisure and Hospitality") %>% 
+  select(time, location, current_emp)
+
+co_ces_hospitality_msa_data <- rbind(co_ces_hospitality_bind, co_ces_hospitality_2) %>% 
+  filter(location != "Colorado") %>% 
+  mutate(location = if_else(location == "rest_of_state", "Rest of State", location)) 
+  
+# Leisure and Hospitality Graph all state locations
+
+lh_msa <- ggplot(data = co_ces_hospitality_msa_data) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1.5, alpha = 0.8) +
+  labs(title = "CO Leisure & Hospitality Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
+       x = "Date", y = "# of Persons Employed (Thousands)") +
+  geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
+  annotate(geom = "text", x = as.Date("2019-12-01"), y = 190000, label = "COVID closures ordered 3/16", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 190000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
+  scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
+  scale_y_continuous(breaks = c(25000, 50000, 75000, 100000, 125000, 150000, 175000),labels = unit_format(unit = NULL, scale = 1e-3)) +
+  scale_color_viridis(name = "Locations", discrete = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+# I want a close up that doesn't include Denver-Aurora MSA and Rest of state to get a
+# better visual of other MSA areas in CO
+
+co_ces_hospitality_msa_data_2 <- co_ces_hospitality_msa_data %>% 
+  filter(location != "Denver - Aurora MSA") %>% 
+  filter(location != "Rest of State")
+
+lh_msa_2 <- ggplot(data = co_ces_hospitality_msa_data_2) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1) +
+  labs(title = "CO Leisure & Hospitality Employment 2018-2020 (Denver - Aurora MSA & Rest of State omitted)", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
+       x = "Date", y = "# of Persons Employed (Thousands)") +
+  geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
+  annotate(geom = "text", x = as.Date("2019-12-01"), y = 47000, label = "COVID closures ordered 3/16", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 47000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
+  scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
+  scale_y_continuous(breaks = c(10000, 20000, 30000, 40000),labels = unit_format(unit = NULL, scale = 1e-3)) +
+  scale_color_viridis(name = "Locations", discrete = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+plot(lh_msa)
+
+```
+
+The April 2020 CES numbers illustrate the severity of the COVID 19 virus on employment in the Leisure and Hospitality sector. Unsurprisingly Denver-Aurora Metropolitan Statistical Area (MSA) experienced the largest fall in employment numbers. Ski resorts were ordered closed March 14th contributing to a greater fall in employment for the rural areas of the state. The most populous MSAs have not returned to their pre covid levels of employment in the Leisure & Hospitality sector. However employment numbers look better for the less populated MSAs in the the state.
+
+```{r, lh_msa_2, echo=FALSE}
+plot(lh_msa_2)
+
+```
+The Greeley, Pueblo, and Grand Junction MSAs all appear to be at or exceeding pre COVID 19 Leisure & Hospitality employment levels. This makes some sense, their populations are smaller and tourism doesn't make up a large portion of their economies compared to other areas of the state. Still it is nice to see that some locations are recovering.
+
+## Restaurants & Food Service
+
+First some abbreviated NAICS definitions. A limited service eating place would be a location where you order from a menu and pay upfront and then sit. Fast food establishments, coffee shops, etc are in this category. Full service restaurants are the traditional sit down establishments, drinking establishments is self explanatory.
+```{r, restaurants and food service, echo=FALSE}
+hl_restaurant <- c("Food Services and Drinking Places", "Full-Service Restaurants",
+                   "Limited-Service Eating Places")
+
+co_ces_restaurant <- co_ces_data %>% 
+  filter(industry %in% hl_restaurant & location == "Colorado") %>%
+  mutate(industry = if_else(seriescode == "70722500", "Restaurants", industry))
+
+# Isolating drinking establishments from restaurants and putting it back into restaurant dataframe
+# for more detailed picture of CO restaurant industry labor
+
+co_ces_drinking_establishments <- co_ces_restaurant %>% 
+  select(seriescode, industry, time, current_emp) %>% 
+  filter(seriescode == "70722000" | seriescode == "70722500") 
+  
+co_ces_drinking_establisments_1 <- co_ces_drinking_establishments %>% 
+  select(industry, time, current_emp) %>% 
+  pivot_wider(names_from = industry, values_from = current_emp) %>% 
+  rename("food_services_and_drinking_places" = "Food Services and Drinking Places",
+         "restaurants" = "Restaurants") %>% 
+  mutate(drinking_establishments = food_services_and_drinking_places - restaurants) %>% 
+  select(time, drinking_establishments) %>% 
+  pivot_longer(drinking_establishments, names_to = "industry", values_to = "current_emp")
+  
+co_ces_restaurant_bind <- co_ces_restaurant %>% 
+  select(time, industry, current_emp) 
+
+co_ces_restaurant_data <-rbind(co_ces_restaurant_bind, co_ces_drinking_establisments_1)
+
+co_ces_restaurant_type_data <- co_ces_restaurant_data %>% 
+  filter(industry == "drinking_establishments" | industry == "Limited-Service Eating Places" | 
+           industry == "Full-Service Restaurants")
+
+# Graph of all restaurant data in CO
+
+restaurant_type_graph <- ggplot(data = co_ces_restaurant_type_data) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = industry, color = industry), size = 1.5, alpha = 0.8) +
+  labs(title = "CO Bar & Restaurant Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
+       x = "Date", y = "# of Persons Employed (Thousands)")+
+  geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
+  annotate(geom = "text", x = as.Date("2019-11-01"), y = 128000, label = "COVID closures ordered 3/16", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 126000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
+  scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
+  scale_y_continuous(breaks = c(25000, 50000, 75000, 100000, 125000),labels = unit_format(unit = NULL, scale = 1e-3)) +
+  scale_color_viridis(name = "Type", labels = c("Drinking Establishments",
+                                                "Full-Service Restaurants", "Limited-Service Eating Places"),
+                      discrete = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+plot(restaurant_type_graph)
+
+```
+
+Limited service eating places have roughly the same number of people employed pre COVID 19. While I doubt that sales have fully recovered it is a nice bright spot for restaurant employment. Full Service restaurant employment predictably had the largest dip in employment. Even with limited in person dining resuming at the end of May there are still fewer people employed. While drinking establishment employment makes up a smaller number of workers, their job numbers haven't improved at all since the state mandated closures. Due to NAICS classification bartendters are not included as drinking establishment employees so the employment dip is actually worse than what is shown in this graph. It suggests that any compensation in this sector should be more focused on drinking establishments and full service restaurants to assist them in retaining their employees, though I am sure all three could use some help.
+
+## Arts, Entertainment, & Recreation
+
+This sector includes jobs related to the following industries: Performing Arts, Spectator Sports, Museums, Historical Sites, Amusement, Gambling (not casino hotel employees), and Recreation. 
+
+```{r, Arts entertainment recreation, echo=FALSE}
+
+
+co_ces_are <- co_ces_service_industry_data %>% 
+  filter(industry == "Arts, Entertainment, and Recreation") %>% 
+  select(time, location, current_emp)
+
+co_ces_are_2 <- co_ces_are %>% 
+  pivot_wider(names_from = location, values_from = current_emp) %>% 
+  clean_names() %>% 
+  mutate(rest_of_state = colorado - denver_aurora_msa) %>% 
+  select(time, rest_of_state) %>% 
+  pivot_longer(rest_of_state, names_to = "location", values_to = "current_emp")
+
+co_ces_are_data <- rbind(co_ces_are, co_ces_are_2) %>% 
+  filter(location != "Colorado") %>% 
+  mutate(location = if_else(location == "rest_of_state", "Rest of State", location))
+
+are_graph <- ggplot(data = co_ces_are_data) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1.5, alpha = 0.8) +
+  labs(title = "CO Arts, Entertainment, & Recreation Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
+       x = "Date", y = "# of Persons Employed (Thousands)") +
+  geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
+  annotate(geom = "text", x = as.Date("2020-01-01"), y = 40000, label = "Closures ordered \nmid March", size = 3) +
+  annotate(geom = "text", x = as.Date("2020-09-01"), y = 40000, label = "Limited in person \ndining resumes 5/25", size = 3) +
+  geom_vline(xintercept = as.numeric(as.Date("2020-04-01")), color = "purple4", size = 1, linetype = "dashed") +
+  scale_x_date(date_breaks = "2 month", date_labels = "%m-%Y") +
+  scale_y_continuous(breaks = c(10000, 20000, 30000, 40000),labels = unit_format(unit = NULL, scale = 1e-3)) +
+  scale_color_viridis(name = "Locations", discrete = TRUE) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+
+plot(are_graph)  
+
+```
+
+Pre COVID there was already a lot of seasonal volitility within these industries.  
+
+
