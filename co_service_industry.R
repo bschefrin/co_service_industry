@@ -214,7 +214,7 @@ co_ces_accommodation_data <- rbind(co_ces_accommodation, co_ces_accommodation_2)
 # Accommodation Graph
 
 accommodation_graph <- ggplot(data = co_ces_accommodation_data) +
-  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1) +
+  geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1.5, alpha = 0.8) +
   labs(title = "CO Accommodation Employment 2018-2020", subtitle = "Note: Values for Dec 2020 are predicted values and subject to change",
        x = "Date", y = "# of Persons Employed (Thousands)") +
   geom_vline(xintercept = as.numeric(as.Date("2020-06-01")), color = "darkorange1", size = 1, linetype = "dashed") +
@@ -233,7 +233,7 @@ rm(co_ces_accommodation, co_ces_accommodation_2)
 
 # Arts Recreation Entertainment--------------------------------------------------------------------------
 
-
+#
 co_ces_are <- co_ces_service_industry_data %>% 
   filter(industry == "Arts, Entertainment, and Recreation") %>% 
   select(time, location, current_emp)
@@ -248,6 +248,8 @@ co_ces_are_2 <- co_ces_are %>%
 co_ces_are_data <- rbind(co_ces_are, co_ces_are_2) %>% 
   filter(location != "Colorado") %>% 
   mutate(location = if_else(location == "rest_of_state", "Rest of State", location))
+
+# ARE graph
 
 are_graph <- ggplot(data = co_ces_are_data) +
   geom_line(mapping = aes(x = time, y = current_emp, group = location, color = location), size = 1) +

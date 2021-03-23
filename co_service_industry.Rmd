@@ -2,8 +2,8 @@
 title: "Leisure & Hospitality Employment in CO"
 author: "Benjamin Jacob Schefrin"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r, echo=FALSE, include=FALSE}
@@ -67,13 +67,13 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
 ## COVID 19 and the Colorado Leisure & Hospitality Industry
 
-Before going back to school for an Economics degree I worked for a variety of bars and restaurants in the Boulder area. I enjoyed the work, it paid well and was flexible. After working in this industry for roughly 2 decades I really wanted to get a better idea of where in Colorado was affected, as well as which areas of the leisure and hospitality industry in Colorado have taken the biggest hits.
+Before going back to school for an Economics degree I worked for a variety of bars and restaurants in the Boulder area. I enjoyed the work, it paid well and was flexible. After working in this industry for roughly 2 decades I really wanted to get a better idea of where in Colorado was affected, as well as which areas of the Leisure and Hospitality industry in Colorado have taken the biggest hits.
 
 While comprehensive financial data isn't available, employment data is. In the graphs below I try to provide some level of visual insight as to the state of the Colorado leisure and hospitality industry. I do this by comparing the current level of employment to previous levels of employment from January 2018 to Dec 2020. The data comes from the [Current Employment Statistics](https://www.bls.gov/ces/) (CES) from the Bureau of Labor Statistics (BLS). 
 
 The BLS uses the [North American Industry Classification System](https://www.census.gov/naics/reference_files_tools/2017_NAICS_Manual.pdf) (NAICS) to distinguish jobs in the labor market. The Leisure and Hospitality Industry encompasses two sectors. Arts, Entertainment, & Recreation (Sector 71) and Accomodation & Food Services (Sector 72). With respect to job titles this covers everyone from waiters to ski patrol to fitness instructors to DJs to museum workers etc. NAICS is incredibly useful if you are looking into labor markets, not so much if you are looking for a riveting read. It will probably put you to sleep. So it has that going for it, which is nice. I will do my best to detail which graphs relate to which employment types.
 
-Finally, on all graphs I included vertical lines detailing certain closures and openings. These do not match exactly on the axis due to the fact that the employment data is monthly. Also the data for December 2020 is an estimate from the BLS and is subject to change.
+Finally, on all graphs I included vertical lines detailing certain closures and openings. These do not match exactly on the axis due to the fact that the employment data is monthly so they are lagged to the first of the next month. Lastly, the data for December 2020 is an estimate from the BLS and is subject to change.
 
 ## Leisure and Hospitality in Colorado
 
@@ -150,17 +150,17 @@ plot(lh_msa)
 
 ```
 
-The April 2020 CES numbers illustrate the severity of the COVID 19 virus on employment in the Leisure and Hospitality sector. Unsurprisingly Denver-Aurora Metropolitan Statistical Area (MSA) experienced the largest fall in employment numbers. Ski resorts were ordered closed March 14th contributing to a greater fall in employment for the rural areas of the state. The most populous MSAs have not returned to their pre covid levels of employment in the Leisure & Hospitality sector. However employment numbers look better for the less populated MSAs in the the state.
+The April 2020 CES numbers illustrate the severity of the COVID 19 virus on employment in the Leisure and Hospitality sector. Unsurprisingly Denver-Aurora Metropolitan Statistical Area (MSA) experienced the largest fall in employment numbers. Ski resorts were ordered closed March 14th contributing to a greater fall in employment for rural areas of the state. The most populous MSAs have not returned to their pre covid levels of employment in the Leisure & Hospitality sector. However employment numbers look better for less populated MSAs in the the state.
 
 ```{r, lh_msa_2, echo=FALSE}
 plot(lh_msa_2)
 
 ```
-The Greeley, Pueblo, and Grand Junction MSAs all appear to be at or exceeding pre COVID 19 Leisure & Hospitality employment levels. This makes some sense, their populations are smaller and tourism doesn't make up a large portion of their economies compared to other areas of the state. Still it is nice to see that some locations are recovering.
+The Greeley, Pueblo, and Grand Junction MSAs all appear to be at or exceeding pre COVID 19 Leisure & Hospitality employment levels. This makes some sense, their populations are smaller and tourism doesn't make up a large portion of their economies compared to other areas of the state. Still it is nice to see that some regions are recovering.
 
 ## Restaurants & Food Service
 
-First some abbreviated NAICS definitions. A limited service eating place would be a location where you order from a menu and pay upfront and then sit. Fast food establishments, coffee shops, etc are in this category. Full service restaurants are the traditional sit down establishments, drinking establishments is self explanatory.
+First some abbreviated NAICS definitions. A limited service eating place would be a location where you order from a menu and pay upfront and then sit. Fast food establishments, coffee shops, etc. are in this category. Full service restaurants are the traditional sit down establishments, and the drinking establishments category is self explanatory.
 ```{r, restaurants and food service, echo=FALSE}
 hl_restaurant <- c("Food Services and Drinking Places", "Full-Service Restaurants",
                    "Limited-Service Eating Places")
@@ -216,7 +216,7 @@ plot(restaurant_type_graph)
 
 ```
 
-Limited service eating places have roughly the same number of people employed pre COVID 19. While I doubt that sales have fully recovered it is a nice bright spot for restaurant employment. Full Service restaurant employment predictably had the largest dip in employment. Even with limited in person dining resuming at the end of May there are still fewer people employed. While drinking establishment employment makes up a smaller number of workers, their job numbers haven't improved at all since the state mandated closures. Due to NAICS classification bartendters are not included as drinking establishment employees so the employment dip is actually worse than what is shown in this graph. It suggests that any compensation in this sector should be more focused on drinking establishments and full service restaurants to assist them in retaining their employees, though I am sure all three could use some help.
+Limited service eating places have roughly the same number of people employed pre COVID 19. I doubt that sales have fully recovered but it is a nice bright spot for restaurant employment. Full Service restaurant employment predictably had the largest dip in employment. Even with limited in person dining resuming at the end of May there are still fewer people employed. While drinking establishment employment makes up a smaller number of workers, their job numbers haven't improved at all since the state mandated closures. Due to NAICS classification bartenders are not included as drinking establishment employees so the employment dip is likely worse than what is shown in this graph. It suggests that any compensation in this sector should be more focused on drinking establishments and full service restaurants to assist them in retaining employees.
 
 ## Arts, Entertainment, & Recreation
 
@@ -258,11 +258,11 @@ plot(are_graph)
 
 ```
 
-Pre COVID there was already a lot of seasonal volitility within these industries. COVID appears to have stunted seasonal rehires. The long term implications are unclear. If the recovery is prolonged Colorado may permanently lose a lot of artists and entertainers as they look for better job markets. As for recreation employees once reopenings happen I suspect their jobs will be able to recover more quickly.
+Pre COVID there was already a lot of seasonal volitility within these industries. Closures and restrictions appear to have stunted seasonal rehires. The long term implications are unclear. If the recovery is prolonged Colorado may permanently lose a lot of artists and entertainers as they move to better job markets or drop out of the sector entirely. As for recreation employees once restrictions are relaxed I suspect their jobs will be able to recover more quickly.
 
 ## Accommodation
 
-The last subsector I examined data from was from Accommodation. This includes all hotels, RV parks, Rooming and Boarding houses, etc. I broke up this subsector the same as above, comparing the Denver-Aurora MSA to the rest of the state. No data exists for other MSAs.
+The last subsector I examined was Accommodation. This includes all hotels, RV parks, Rooming and Boarding houses, etc. I compared the Denver-Aurora MSA to the rest of the state. No data exists for other MSAs.
 
 ```{r, Accomodation, echo=FALSE}
 co_ces_accommodation <- co_ces_service_industry_data %>% 
@@ -300,9 +300,9 @@ accommodation_graph <- ggplot(data = co_ces_accommodation_data) +
 plot(accommodation_graph)
 ```
 
-Accommodation employment fell steeply once closures were announced in March. Compared to the rest of the state, the Denver-Aurora MSA has recovered the majority of the jobs lost. The rest of the state is doing much worse still missing roughly 30% of jobs compared to last years numbers for the same month. Depending on how fast restrictions can be relaxed it is likely that there will be fewer seasonal employment opportunities for this sector this coming summer.
+Accommodation employment fell steeply once closures were announced in March. Compared to the rest of the state, the Denver-Aurora MSA has recovered the majority of the jobs lost. The rest of the state is doing much worse still missing roughly 30% of jobs compared to last years numbers for the same month. Depending on how fast restrictions can be relaxed it is likely there will be fewer seasonal employment opportunities for this sector in the near future.
 
 ## Conclusions
 
-To be succinct until restrictions are relaxed employees working the Leisure & Hospitality sector in Colorado will continue to suffer. Thankfully not all sectors/regions are suffering as much as others. The more populated MSAs have more people employed in these sectors and more jobs to recover. This exercise was created to try and gain a little more insight into who and where is being hit the hardest. Feel free to use these graphs so long as credit is given. If you want to replicate any of this the code is available for R on my [Github](https://github.com/bschefrin/co_service_industry) and I have uploaded a CSV that you can use.
+To be succinct until restrictions are relaxed employees working the Leisure & Hospitality sector in Colorado will continue to suffer. Thankfully not all sectors/regions are suffering as much as others. The more populated MSAs have more people employed in these sectors and more jobs to recover. This exercise was created to try and gain a little more insight into which areas of Leisure & Hospitality are being hit the hardest. Feel free to use these graphs so long as credit is given. If you want to replicate any of this the code is available for R on my [Github](https://github.com/bschefrin/co_service_industry) and I have uploaded a CSV that contains all the data. Stay safe!
 
